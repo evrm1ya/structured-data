@@ -100,23 +100,36 @@
 (defn contains-duplicates? [a-seq]
   (> (count a-seq) (count (set a-seq))))
 
+;; convert authors vector to a set
+;; won't be duplicate authors
 (defn old-book->new-book [book]
   (assoc book :authors (set (:authors book))))
 
 (defn has-author? [book author]
-  :-)
+  (contains? (:authors book) author))
 
+;; get all authors from books
 (defn authors [books]
-  :-)
+    (let [author-list 
+          (map (fn [x] (:authors x)) books)]
+  (apply clojure.set/union author-list)))
 
 (defn all-author-names [books]
-  :-)
+  (let [author-set (authors books)
+        name-mapper (fn [author] (:name author))]
+    (set (map name-mapper author-set))))
+    
 
 (defn author->string [author]
-  :-)
+  (let [{:keys [name birth-year death-year]} author]
+    (if (nil? birth-year)
+      (str name)
+      (str name " (" birth-year " - " death-year ")"))))
 
 (defn authors->string [authors]
-  :-)
+  (let [authors-as-strings
+        (map (fn [author] (author->string author)) authors)]
+    (apply str (interpose ", " authors-as-strings))))
 
 (defn book->string [book]
   :-)
