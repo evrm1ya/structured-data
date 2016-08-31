@@ -128,28 +128,42 @@
 
 (defn authors->string [authors]
   (let [authors-as-strings
-        (map (fn [author] (author->string author)) authors)]
+        ;(map (fn [author] (author->string author)) authors)]
+        (map #(author->string %) authors)]
     (apply str (interpose ", " authors-as-strings))))
 
 (defn book->string [book]
-  :-)
+  (let [{:keys [title authors]} book]
+    (str title ", written by " (authors->string authors))))
+
+(defn books->string-builder [books]
+  ;(let [mapper (map (fn [book] (book->string book)) books)]
+  (let [mapper (map #(book->string %) books)]
+    (apply str (interpose ". " mapper))))
 
 (defn books->string [books]
-  :-)
+  (let [books-count (count books)
+        built-books-string (books->string-builder books)]
+    (cond
+      (zero? books-count) "No books."
+      (= 1 books-count) (str "1 book. " built-books-string ".")
+      :else (str books-count " books. " built-books-string "."))))
 
 (defn books-by-author [author books]
-  :-)
+  (filter (fn [book] (has-author? book author)) books))
 
 (defn author-by-name [name authors]
-  :-)
+  ;(first (filter (fn [author] (= name (:name author))) authors)))
+  (first (filter #(= name (:name %)) authors)))
 
 (defn living-authors [authors]
-  :-)
+  (filter #(alive? %) authors))
 
 (defn has-a-living-author? [book]
-  :-)
+  (let [authors (:authors book)]
+    (not (empty? (living-authors authors)))))
 
 (defn books-by-living-authors [books]
-  :-)
+  (filter #(has-a-living-author? %) books))
 
 ; %________%
